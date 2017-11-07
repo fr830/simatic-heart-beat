@@ -180,13 +180,13 @@ class SettingsPage extends React.Component {
          />
          c.actions = <span>
                        <Button type="primary" className="button-spaging-horizontal" onClick={this.editItem}>Save</Button>
-                       <Button icon="cancel" type="default" className="button-spaging-horizontal" onClick={()=>this.setItemEditMode(c, false)}>Cancel</Button>
+                       <Button type="default" className="button-spaging-horizontal" onClick={()=>this.setItemEditMode(c, false)}>Cancel</Button>
                      </span>
        }else{
          c.actions = <span>
-                       <Button icon="edit" type="default" className="button-spaging-horizontal" onClick={()=>this.setItemEditMode(c, true)}>Edit</Button>
+                       <Button type="default" className="button-spaging-horizontal" onClick={()=>this.setItemEditMode(c, true)}>Edit</Button>
                        <Popconfirm title="Sure to delete?" onConfirm={() => this.deleteItem(c)}>
-                         <Button icon="close" type="danger" className="button-spaging-horizontal">Delete</Button>
+                         <Button type="danger" className="button-spaging-horizontal">Delete</Button>
                        </Popconfirm>
                      </span>
          c.customName = c.Name

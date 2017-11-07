@@ -32,6 +32,14 @@ namespace SimaticHeartBeat.Controllers
         }
 
         [HttpGet]
+        [ActionName("GetAllSitClientsHistory")]
+        public IEnumerable<SitClient> GetAllSitClientsHistory()
+        {
+            List<SitClient> sitClients = sitClientsRepository.RetrieveSitClientsHistory();
+            return sitClients;
+        }
+
+        [HttpGet]
         [ActionName("GetSitClient")]
         public IHttpActionResult GetSitClient(string argument)
         {

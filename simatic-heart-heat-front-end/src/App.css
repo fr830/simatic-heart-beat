@@ -57,3 +57,9 @@ li.ant-menu-item{
 .button-spaging-horizontal{
   margin: 0 10px;
 }
+
+@media all and (max-width: 768px) {
+  .wide-screen-only{
+    display: none;
+  }
+}

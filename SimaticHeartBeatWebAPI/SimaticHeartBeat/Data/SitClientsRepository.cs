@@ -95,6 +95,48 @@ namespace SimaticHeartBeat.Data
             return sitClients;
         }
 
+        public List<SitClient> RetrieveSitClientsHistory()
+        {
+            List<SitClient> sitClients = new List<SitClient>();
+
+            SqlCommand command;
+            string sql = null;
+            SqlDataReader dataReader;
+            sql = @"select * from SitClientsHistory";
+
+            SqlConnection cnn;
+            cnn = new SqlConnection(connectionString);
+            try
+            {
+                cnn.Open();
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    SitClient sitClientToAdd = new SitClient();
+                    if (!dataReader.IsDBNull(0)) { sitClientToAdd.Id = Convert.ToInt32(dataReader.GetValue(0)); }
+                    if (!dataReader.IsDBNull(1)) { sitClientToAdd.Name = Convert.ToString(dataReader.GetValue(1)); }
+                    if (!dataReader.IsDBNull(2)) { sitClientToAdd.Ip = Convert.ToString(dataReader.GetValue(2)); }
+                    if (!dataReader.IsDBNull(4)) { sitClientToAdd.IsClientUp = Convert.ToBoolean(dataReader.GetValue(4)); }
+                    if (!dataReader.IsDBNull(5)) { sitClientToAdd.PingRoundTripTime = Convert.ToInt32(dataReader.GetValue(5)); }
+                    if (!dataReader.IsDBNull(6)) { sitClientToAdd.LastUpdate = Convert.ToDateTime(dataReader.GetValue(6)); }
+
+                    sitClients.Add(sitClientToAdd);
+
+                }
+                dataReader.Close();
+                command.Dispose();
+                cnn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                logger.Trace("Exception in database call: " + ex.ToString());
+            }
+
+            return sitClients;
+        }
+
         public SitClient RetrieveSitClient(string argument)
         {
             List<SitClient> sitClients = RetrieveSitClients();

@@ -216,13 +216,6 @@ class SettingsPage extends React.Component {
     return (
       <div>
 
-        <div className="anchor-div">
-          <Anchor>
-            <Link href="#clients" title="Sit Client Manager" />
-            <Link href="#ping-timeout" title="Ping interval" />
-          </Anchor>
-        </div>
-
         <div className="section-1-header" id="clients">
           <span className="text-spacing">SERVER CONFIGURATION</span>
         </div>

@@ -26,16 +26,20 @@ class ClientsPage extends React.Component {
       title: 'IP Address',
       dataIndex: 'Ip',
       sorter: (a,b) => a.Ip > b.Ip ? 1 : -1,
+      className: "wide-screen-only"
     },{
       title: 'State',
       dataIndex: 'State',
+      sorter: (a,b) => a.IsClientUp ? 1 : -1,
     },{
       title: 'Latency',
       dataIndex: 'PingRoundTripTime',
       sorter: (a,b) => a.PingRoundTripTime > b.PingRoundTripTime ? 1 : -1,
+      className: "wide-screen-only"
     },{
       title: 'Last Update',
       dataIndex: 'Date',
+      className: "wide-screen-only"
     }]
 
     var data = this.props.clients.clientList.map(function(c, i){
@@ -50,7 +54,7 @@ class ClientsPage extends React.Component {
       }
 
       return c
-    })
+    }).sort((a, b) => a.IsClientUp ? 1 : -1)
 
     return <Table columns={columns} dataSource={data} pagination={false} className="table"/>
   }
@@ -58,9 +62,6 @@ class ClientsPage extends React.Component {
   render() {
     return (
       <div>
-
-
-
       {this.renderClients()}
       </div>
     );

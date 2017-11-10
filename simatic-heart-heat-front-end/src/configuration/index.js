@@ -6,7 +6,8 @@ const appConfiguration = {
     getConfiguration: "/api/SitClients/GetConfiguration",
     updatePingInterval: "/api/SitClients/UpdatePingInterval",
     updateClient: "/api/SitClients/EditOrInsertSitClient",
-    deleteClient: "/api/SitClients/DeleteSitClient"
+    deleteClient: "/api/SitClients/DeleteSitClient",
+    getAllClientsHistory: "/api/SitClients/GetAllSitClientsHistory",
   },
   initialState: {
     clients: {
@@ -20,6 +21,10 @@ const appConfiguration = {
         fetchingPingInterval: false,
         pingInterval: 0
       }
+    },
+    analytics: {
+      clientsHistory: [],
+      fetching: false
     }
   }
 }

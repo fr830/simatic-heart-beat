@@ -2,8 +2,20 @@ import React from 'react'
 import {Table, Spin, Icon} from 'antd';
 import Moment from 'moment'
 import _ from 'underscore'
+import {detect} from 'detect-browser'
 
 class ClientsPage extends React.Component {
+
+  constructor(props) {
+    super(props);
+    var isNotChrome = false
+    if(detect()){
+      if(detect().name != "chrome"){
+        isNotChrome = true
+      }
+    }
+    this.state = {isNotChrome};
+  }
 
   onChange = function(pagination, filters, sorter) {
     console.log('params', pagination, filters, sorter);
@@ -48,13 +60,21 @@ class ClientsPage extends React.Component {
       c.Date = Moment(c.LastUpdate).format('h:mm:ss a M/D');
 
       if(c.PingPending){
-        c.State = <Icon type="loading" style={{ fontSize: 20}}/>
+        if(this.state.isNotChrome){
+          c.State = "Pinging..."
+        }else{
+          c.State = <Icon type="loading" style={{ fontSize: 20}}/>
+        }
       }else{
-        c.State = c.IsClientUp ? <Icon type="check-circle" style={{ fontSize: 20, color: '#27ae60' }}/> : <Icon type="close-circle" style={{ fontSize: 20, color: '#e74c3c' }}/>
+        if(this.state.isNotChrome){
+          c.State = c.IsClientUp ? <span className="green">Up</span> : <span className="red"> Down </span>
+        }else{
+          c.State = c.IsClientUp ? <Icon type="check-circle" style={{ fontSize: 20, color: '#27ae60' }}/> : <Icon type="close-circle" style={{ fontSize: 20, color: '#e74c3c' }}/>
+        }
       }
 
       return c
-    }).sort((a, b) => a.IsClientUp ? 1 : -1)
+    }.bind(this)).sort((a, b) => a.IsClientUp ? 1 : -1)
 
     return <Table columns={columns} dataSource={data} pagination={false} className="table"/>
   }

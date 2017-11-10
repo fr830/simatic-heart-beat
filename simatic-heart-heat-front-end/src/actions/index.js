@@ -12,6 +12,16 @@ export const getAllClients = (fetchingFeedback = true) => ({
     }
 })
 
+export const getAllClientsHistory = (fetchingFeedback = true) => ({
+  type: 'GET_ALL_CLIENTS_HISTORY',
+  payload: {
+      request:{
+        url: configuration.apis.getAllClientsHistory
+      },
+      fetchingFeedback
+    }
+})
+
 export const getConfiguration = () => ({
   type: 'GET_CONFIGURATION',
   payload: {

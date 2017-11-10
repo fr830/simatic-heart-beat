@@ -1,5 +1,9 @@
 @import '~antd/dist/antd.css';
 
+body{
+  background-color: #F8F8F8;
+}
+
 .table{
   margin: 20px 0;
 }
@@ -26,6 +30,10 @@ li.ant-menu-item{
   padding: 20px;
 }
 
+.disabled{
+  color: #95a5a6
+}
+
 .section-1-header{
   margin: 40px 0 0 0;
   border: 1px solid #f7f7f7;
@@ -33,6 +41,43 @@ li.ant-menu-item{
   padding: 16px;
   text-align: center;
   background-color: #f7f7f7;
+}
+
+.hidden-overflow{
+  overflow: hidden;
+}
+
+.relative{
+  position: relative;
+}
+
+.absolute{
+  position: absolute;
+}
+
+.background-div{
+  background-color: #bdc3c7;
+  color: white;
+  word-wrap: break-word;
+  overflow:hidden;
+  white-space: nowrap;
+  padding: 2px 5px;
+}
+
+.foreground-div{
+  padding: 2px 5px;
+}
+
+.col8{
+  float: left;
+  width: 16%;
+  margin: .3%;
+  //padding: .3%;
+  cursor: pointer;
+}
+
+.text1{
+  font-size: 10pt
 }
 
 .text-spacing{
@@ -56,6 +101,39 @@ li.ant-menu-item{
 
 .button-spaging-horizontal{
   margin: 0 10px;
+}
+
+.green{
+  color: #27ae60
+}
+
+.red{
+  color: #c0392b
+}
+
+/*Graphs*/
+.axis line{
+  stroke: #95a5a6;
+}
+
+.axis path{
+  stroke: #95a5a6;
+}
+
+.axis text{
+  fill: #95a5a6;
+}
+
+.line{
+  fill: none;
+  stroke: #2980b9;
+  stroke-width: 1px;
+}
+
+.target-line{
+  fill: none;
+  stroke: #95a5a6;
+  stroke-width: 1px;
 }
 
 @media all and (max-width: 768px) {

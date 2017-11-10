@@ -36,9 +36,11 @@ class ClientsPage extends React.Component {
             <Menu.Item key="network">
               <Link to="/network"><Icon type="cloud" />Network</Link>
             </Menu.Item>
+            {/*
             <Menu.Item key="analytics">
-            <Link to="/analytics"><Icon type="area-chart" />Analytics</Link>
+              <Link to="/analytics"><Icon type="area-chart" />Analytics</Link>
             </Menu.Item>
+          */}
             <Menu.Item key="settings">
             <Link to="/settings"><Icon type="setting" />Settings</Link>
             </Menu.Item>

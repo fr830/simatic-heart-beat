@@ -62,6 +62,7 @@ li.ant-menu-item{
   overflow:hidden;
   white-space: nowrap;
   padding: 2px 5px;
+  border-radius: 2px;
 }
 
 .foreground-div{

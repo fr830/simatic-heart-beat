@@ -1,5 +1,5 @@
 import React from 'react'
-import {Table, Spin, Icon} from 'antd';
+import {Table, Spin, Icon, Tag} from 'antd';
 import Moment from 'moment'
 import _ from 'underscore'
 import {detect} from 'detect-browser'
@@ -57,20 +57,13 @@ class ClientsPage extends React.Component {
     var data = this.props.clients.clientList.map(function(c, i){
       c.key = i;
 
+
       c.Date = Moment(c.LastUpdate).format('h:mm:ss a M/D');
 
-      if(c.PingPending){
-        if(this.state.isNotChrome){
-          c.State = "Pinging..."
-        }else{
-          c.State = <Icon type="loading" style={{ fontSize: 20}}/>
-        }
+      if(c.IsClientUp){
+        c.State = <span><Tag color="#27ae60" className="tag">HMI up</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
       }else{
-        if(this.state.isNotChrome){
-          c.State = c.IsClientUp ? <span className="green">Up</span> : <span className="red"> Down </span>
-        }else{
-          c.State = c.IsClientUp ? <Icon type="check-circle" style={{ fontSize: 20, color: '#27ae60' }}/> : <Icon type="close-circle" style={{ fontSize: 20, color: '#e74c3c' }}/>
-        }
+        c.State = <span><Tag color="#c0392b" className="tag">HMI down</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
       }
 
       return c

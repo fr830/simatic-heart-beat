@@ -137,6 +137,11 @@ li.ant-menu-item{
   stroke-width: 1px;
 }
 
+.tag{
+  margin: 2px 0;
+}
+
+
 @media all and (max-width: 768px) {
   .wide-screen-only{
     display: none;

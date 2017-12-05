@@ -61,9 +61,9 @@ class ClientsPage extends React.Component {
       c.Date = Moment(c.LastUpdate).format('h:mm:ss a M/D');
 
       if(c.IsClientUp){
-        c.State = <span><Tag color="#27ae60" className="tag">HMI up</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
+        c.State = <span><Tag color="#27ae60" className="tag">Node up</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
       }else{
-        c.State = <span><Tag color="#c0392b" className="tag">HMI down</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
+        c.State = <span><Tag color="#c0392b" className="tag">Node down</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
       }
 
       return c

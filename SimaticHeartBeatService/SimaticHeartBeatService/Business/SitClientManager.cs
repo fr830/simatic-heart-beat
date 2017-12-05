@@ -68,7 +68,8 @@ namespace SimaticHeartBeatService.Business
 	                    PingRoundTripTime int NULL,
 	                    LastUpdate datetime NULL,
 	                    PingPending bit NULL,
-	                    CreationDate datetime NULL
+	                    CreationDate datetime NULL,
+                        NodeType int NULL
                     )";
         cmd.CommandText = sql;
 
@@ -82,6 +83,38 @@ namespace SimaticHeartBeatService.Business
       {
         logger.Trace("Exception in database call: " + ex.ToString());
       }
+    }
+
+    public void checkClientsHistoryEntities()
+    {
+        SqlConnection sqlConnection = new SqlConnection(connectionString);
+
+        SqlCommand cmd = new SqlCommand();
+        string sql = "";
+        cmd.CommandType = System.Data.CommandType.Text;
+        try
+        {
+            sql = @"if not exists (select * from sysobjects where name='SitClientsHistory' and xtype='U') 
+                    CREATE TABLE SitClientsHistory(
+	                    Id int IDENTITY(1,1) NOT NULL,
+	                    Name nvarchar(max) NULL,
+	                    Ip nvarchar(max) NULL,
+	                    IsClientUp bit NULL,
+	                    PingRoundTripTime int NULL,
+	                    LastUpdate datetime NULL
+                    )";
+            cmd.CommandText = sql;
+
+            cmd.Connection = sqlConnection;
+
+            sqlConnection.Open();
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+        }
+        catch (Exception ex)
+        {
+            logger.Trace("Exception in database call: " + ex.ToString());
+        }
     }
 
     public List<SitClient> RetrieveSitClients()
@@ -128,6 +161,8 @@ namespace SimaticHeartBeatService.Business
 
       return sitClients;
     }
+
+
 
     public void UpdateSitClientPingPending(SitClient clientToUpdate)
     {
@@ -179,6 +214,58 @@ namespace SimaticHeartBeatService.Business
       {
         logger.Trace("Exception in database call: " + ex.ToString());
       }
+    }
+
+    public void InsertSitClientHistory(SitClient clientToInsert)
+    {
+        SqlConnection sqlConnection = new SqlConnection(connectionString);
+        DateTime timestamp = DateTime.Now;
+
+        SqlCommand cmd = new SqlCommand();
+        string sql = "";
+        cmd.CommandType = System.Data.CommandType.Text;
+        try
+        {
+            int IsClientUpInt = clientToInsert.IsClientUp ? 1 : 0;
+            sql = "Insert into SitClientsHistory (Name, Ip, IsClientUp, PingRoundTripTime, LastUpdate) values ('" + clientToInsert.Name + "', '" + clientToInsert.Ip + "', " + IsClientUpInt + ", " + clientToInsert.PingRoundTripTime + ", '" + timestamp.ToString() + "')";
+            cmd.CommandText = sql;
+
+            cmd.Connection = sqlConnection;
+
+            sqlConnection.Open();
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+            deleteOldSitClientHistory();
+        }
+        catch (Exception ex)
+        {
+            logger.Trace("Exception in database call: " + ex.ToString());
+        }
+    }
+
+    public void deleteOldSitClientHistory()
+    {
+        SqlConnection sqlConnection = new SqlConnection(connectionString);
+        DateTime lastWeek = DateTime.Now.AddDays(-7);
+
+        SqlCommand cmd = new SqlCommand();
+        string sql = "";
+        cmd.CommandType = System.Data.CommandType.Text;
+        try
+        {
+            sql = "delete from SitClientsHistory where LastUpdate < '" + lastWeek.ToString() + "'";
+            cmd.CommandText = sql;
+
+            cmd.Connection = sqlConnection;
+
+            sqlConnection.Open();
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+        }
+        catch (Exception ex)
+        {
+            logger.Trace("Exception in database call: " + ex.ToString());
+        }
     }
 
     public void sitClientWatchDog()
@@ -240,6 +327,7 @@ namespace SimaticHeartBeatService.Business
         }
 
         UpdateSitClientIsUpFlag(c);
+        InsertSitClientHistory(c);
       }
       catch (Exception ex)
       {
@@ -249,6 +337,7 @@ namespace SimaticHeartBeatService.Business
         rtdsManager.updateRtdsTag(c.Name, false);
         UpdateSitClientPingPending(c);
         UpdateSitClientIsUpFlag(c);
+        InsertSitClientHistory(c);
       }
     }
 

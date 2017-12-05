@@ -36,6 +36,7 @@ namespace SimaticHeartBeatService
 
       logger.Trace("Checking entities in DB");
       sitClientManager.checkClientsEntities();
+      sitClientManager.checkClientsHistoryEntities();
       serverConfigurationManager.checkConfigurationsEntities();
 
       logger.Trace("Resetting Ping Pending statuses");

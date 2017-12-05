@@ -69,7 +69,7 @@ namespace SimaticHeartBeatService.Business
 	                    LastUpdate datetime NULL,
 	                    PingPending bit NULL,
 	                    CreationDate datetime NULL,
-                        HasSimatic int NULL
+                        NodeType int NULL
                     )";
         cmd.CommandText = sql;
 

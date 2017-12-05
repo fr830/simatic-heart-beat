@@ -1,9 +1,11 @@
 import React from 'react'
-import {Table, Icon,Form, InputNumber, Input, Button, Anchor, Popconfirm} from 'antd';
+import {Table, Icon,Form, InputNumber, Input, Button, Anchor, Popconfirm, Radio} from 'antd';
 import Moment from 'moment'
 import _ from 'underscore'
+import configuration from '../configuration'
 const FormItem = Form.Item;
 const { Link } = Anchor;
+
 
 class SettingsPage extends React.Component {
 
@@ -16,7 +18,8 @@ class SettingsPage extends React.Component {
         newItem: {
           Id: -1,
           Name: "",
-          Ip: ""
+          Ip: "",
+          NodeType: 0
         },
         editedItem: {
           Id: -1,
@@ -38,6 +41,7 @@ class SettingsPage extends React.Component {
   editItem = function(){
     var editedItem = this.state.editedItem
     delete editedItem.actions
+    console.log(editedItem);
     this.props.updateClient(editedItem)
     this.setItemEditMode(editedItem, false)
   }
@@ -107,6 +111,17 @@ class SettingsPage extends React.Component {
     });
   }
 
+  handleSitClientNodeTypeEdit = (event, c) => {
+    var currentEditedItem = this.state.editedItem;
+    currentEditedItem.NodeType = event.target.value
+    if(c){
+      c.NodeType = event.target.value
+    }
+    this.setState({
+      editedItem: currentEditedItem
+    });
+  }
+
   handleSitClientNameChange = (event) => {
     var currentNewItem = this.state.newItem;
     currentNewItem.Name = event.target.value
@@ -118,6 +133,14 @@ class SettingsPage extends React.Component {
   handleSitClientIPChange = (event) => {
     var currentNewItem = this.state.newItem;
     currentNewItem.Ip = event.target.value
+    this.setState({
+      newItem: currentNewItem
+    });
+  }
+
+  handleSitClientNodeTypeChange = (event) => {
+    var currentNewItem = this.state.newItem;
+    currentNewItem.NodeType = event.target.value
     this.setState({
       newItem: currentNewItem
     });
@@ -151,6 +174,11 @@ class SettingsPage extends React.Component {
       title: 'IP Address',
       dataIndex: 'customIp',
       sorter: (a,b) => a.Ip > b.Ip ? 1 : -1,
+    },
+    {
+      title: 'Node Type',
+      dataIndex: 'customNodeType',
+      //sorter: (a,b) => a.Ip > b.Ip ? 1 : -1,
     },{
       title: 'Creation Date',
       dataIndex: 'Date',
@@ -178,6 +206,9 @@ class SettingsPage extends React.Component {
            prefix={<Icon type="cloud" style={{ fontSize: 13 }} />} placeholder="127.0.0.1"
            value={this.state.editedItem.Ip}
          />
+         c.customNodeType = <Radio.Group value={c.NodeType} onChange={(value) => this.handleSitClientNodeTypeEdit(value, c)}>
+          {configuration.constants.nodeTypes.map((n, i) => <Radio.Button key={i} value={n.value}>{n.displayName}</Radio.Button>)}
+        </Radio.Group>
          c.actions = <span>
                        <Button type="primary" className="button-spaging-horizontal" onClick={this.editItem}>Save</Button>
                        <Button type="default" className="button-spaging-horizontal" onClick={()=>this.setItemEditMode(c, false)}>Cancel</Button>
@@ -191,6 +222,7 @@ class SettingsPage extends React.Component {
                      </span>
          c.customName = c.Name
          c.customIp = c.Ip
+         c.customNodeType = configuration.constants.nodeTypes[c.NodeType].displayName
        }
        return c
      }.bind(this))
@@ -207,8 +239,8 @@ class SettingsPage extends React.Component {
           wrapperCol: { span: 12 },
         };
     const formItemLayout2 = {
-          labelCol: { span: 6 },
-          wrapperCol: { span: 6 },
+          labelCol: { span: 9 },
+          wrapperCol: { span: 9 },
         };
     const number = this.state.number;
     const tips = 'Enter a number in miliseconds.';
@@ -230,6 +262,7 @@ class SettingsPage extends React.Component {
                 value={number.value}
                 onChange={this.handleNumberChange}
               />
+
             </FormItem>
             <FormItem>
               <Button type="primary" htmlType="submit" className="button-spaging-horizontal" loading={this.props.clients.configuration.fetchingPingInterval} onClick={this.updatePingInterval}>
@@ -263,6 +296,11 @@ class SettingsPage extends React.Component {
                 value={this.state.newItem.Ip}
                 prefix={<Icon type="cloud" style={{ fontSize: 13 }} />} placeholder="127.0.0.1"
               />
+            </FormItem>
+            <FormItem>
+              <Radio.Group value={this.state.newItem.NodeType} onChange={this.handleSitClientNodeTypeChange}>
+               {configuration.constants.nodeTypes.map((n, i) => <Radio.Button key={i} value={n.value}>{n.displayName}</Radio.Button>)}
+             </Radio.Group>
             </FormItem>
             <FormItem>
               <Button type="primary" htmlType="submit" className="button-spaging-horizontal" onClick={this.saveItem}>

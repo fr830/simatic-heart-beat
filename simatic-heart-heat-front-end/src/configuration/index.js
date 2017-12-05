@@ -9,6 +9,12 @@ const appConfiguration = {
     deleteClient: "/api/SitClients/DeleteSitClient",
     getAllClientsHistory: "/api/SitClients/GetAllSitClientsHistory",
   },
+  constants: {
+    nodeTypes: [
+      {value: 0, displayName: "Simatic Node"},
+      {value: 1, displayName: "Network Node"}
+    ]
+  },
   initialState: {
     clients: {
       clientList: [],

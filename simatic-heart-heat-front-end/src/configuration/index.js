@@ -1,6 +1,6 @@
 const appConfiguration = {
-  //serverBaseUrl: "http://192.168.205.94:8080",
-  serverBaseUrl: "http://10.45.185.19:8080",
+  serverBaseUrl: "http://192.168.205.94:8080",
+  //serverBaseUrl: "http://10.45.185.19:8080",
   apis: {
     getAllClients: "/api/SitClients/GetAllSitClients",
     getConfiguration: "/api/SitClients/GetConfiguration",

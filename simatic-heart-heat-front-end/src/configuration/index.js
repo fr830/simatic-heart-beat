@@ -1,6 +1,9 @@
 const appConfiguration = {
-  serverBaseUrl: "http://192.168.205.94:8080",
-  //serverBaseUrl: "http://10.45.185.19:8080",
+  //serverBaseUrl: "http://192.168.205.94:8080",
+  serverBaseUrl: "http://10.45.185.19:8080", //Prod Torrance 
+  //serverBaseUrl: "http://tre-sit-web-cl1.afsr.mi.valueaddco.com:8080", //Prod Torrance
+  //serverBaseUrl: "http://10.45.182.140:8080", //Dev Torrance
+  //serverBaseUrl: "http://10.45.186.18:8080", //qa Torrance
   apis: {
     getAllClients: "/api/SitClients/GetAllSitClients",
     getConfiguration: "/api/SitClients/GetConfiguration",

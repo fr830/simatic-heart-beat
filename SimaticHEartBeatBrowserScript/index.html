@@ -1,3 +1,7 @@
+D:\Program Files (x86)\Siemens\SIT\CAB\portal\SITApps\SITPortal\Scripts\ILD-ACM\CustomScriptOperator.js
+D:\Program Files (x86)\Siemens\SIT\CAB\portal\SITApps\SITPortal\PortalPage\MemberLogin
+
+
 <script
   src="https://code.jquery.com/jquery-3.2.1.js"
   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
@@ -5,7 +9,9 @@
 
 
 <script>
+$.support.cors = true
+$.get( "http://tre-sit-web-cl1.afsr.mi.valueaddco.com:8080/api/SitClients/UpdateSitClientHeartBeat", function( data ) {});
 setInterval(function(){
-  $.get( "http://192.168.205.94:8080/api/SitClients/UpdateSitClientHeartBeat", function( data ) {});
-}, 1000)
+  $.get( "http://tre-sit-web-cl1.afsr.mi.valueaddco.com:8080/api/SitClients/UpdateSitClientHeartBeat", function( data ) {});
+}, 2500)
 </script>

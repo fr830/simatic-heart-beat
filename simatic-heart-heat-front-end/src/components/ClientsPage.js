@@ -28,6 +28,20 @@ class ClientsPage extends React.Component {
     }
   }
 
+  statusSorter(a,b){
+    var result = 1
+
+    if(!a.IsClientUp && b.IsClientUp){
+      result = -1
+    }
+
+    if(Moment().diff(Moment(b.LastHeartBeat), "minutes") < 10){
+      result = -1
+    }
+
+    return result
+  }
+
   renderClients = function(){
     var columns = [{
       title: 'Name',
@@ -43,6 +57,7 @@ class ClientsPage extends React.Component {
       title: 'State',
       dataIndex: 'State',
       sorter: (a,b) => a.IsClientUp ? 1 : -1,
+      //sorter: this.statusSorter
     },{
       title: 'Latency',
       dataIndex: 'PingRoundTripTime',
@@ -59,23 +74,31 @@ class ClientsPage extends React.Component {
 
 
       c.Date = Moment(c.LastUpdate).format('h:mm:ss a M/D');
+      var networkNodeElement = undefined
+      var simaticNodeElement = undefined
 
       if(c.NodeType == 0){
-        if(c.IsClientUp){
-          c.State = <span><Tag color="#27ae60" className="tag">Node up</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
+        if(Moment().diff(Moment(c.LastHeartBeat), "seconds") > 5 ){
+          simaticNodeElement = <Tag color="red" className="tag">Simatic Closed</Tag>
         }else{
-          c.State = <span><Tag color="#c0392b" className="tag">Node down</Tag> <br/> <Tag color="#7f8c8d" className="tag">Checking Client</Tag></span>
-        }
-      }else{
-        if(c.IsClientUp){
-          c.State = <span><Tag color="#27ae60" className="tag">Node up</Tag></span>
-        }else{
-          c.State = <span><Tag color="#c0392b" className="tag">Node down</Tag></span>
+          simaticNodeElement = <Tag color="green" className="tag">Simatic Open</Tag>
         }
       }
 
+      if(c.IsClientUp){
+        networkNodeElement = <Tag color="#27ae60" className="tag">Node up</Tag>
+      }else{
+        networkNodeElement = <Tag color="#c0392b" className="tag">Node down</Tag>
+      }
+
+      c.State = <span>
+        {networkNodeElement}
+        <br/>
+        {simaticNodeElement}
+      </span>
+
       return c
-    }.bind(this)).sort((a, b) => a.IsClientUp ? 1 : -1)
+    }.bind(this)).sort((a,b) => a.IsClientUp ? 1 : -1)
 
     return <Table columns={columns} dataSource={data} pagination={false} className="table"/>
   }

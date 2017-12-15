@@ -12,11 +12,13 @@ export const getAllClients = (fetchingFeedback = true) => ({
     }
 })
 
-export const getAllClientsHistory = (fetchingFeedback = true) => ({
+export const getAllClientsHistory = (fetchingFeedback = true, startTime, endTime) => ({
   type: 'GET_ALL_CLIENTS_HISTORY',
   payload: {
       request:{
-        url: configuration.apis.getAllClientsHistory
+        url: configuration.apis.getAllClientsHistory,
+        method: 'post',
+        data: {startTime: startTime, endTime:endTime}
       },
       fetchingFeedback
     }

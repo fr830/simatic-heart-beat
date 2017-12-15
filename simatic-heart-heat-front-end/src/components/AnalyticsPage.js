@@ -3,7 +3,7 @@ import {Table, Spin, Icon} from 'antd';
 import Moment from 'moment'
 import _ from 'underscore'
 import {detect} from 'detect-browser'
-import GraphPageContainer from '../containers/GraphPageContainer'
+import GanttPageContainer from '../containers/GanttPageContainer'
 class AnalyticsPage extends React.Component {
 
   constructor(props) {
@@ -20,7 +20,7 @@ class AnalyticsPage extends React.Component {
   render() {
     return (
       <div>
-      <GraphPageContainer/>
+      <GanttPageContainer/>
       </div>
     );
   }

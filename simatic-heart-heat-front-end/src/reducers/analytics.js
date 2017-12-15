@@ -8,9 +8,10 @@ const analytics = (state = configuration.initialState.analytics, action) => {
         ...state, fetching: action.payload.fetchingFeedback
       }
     case 'GET_ALL_CLIENTS_HISTORY_SUCCESS':
-      return {
-        ...state, fetching: false, clientsHistory: action.payload.data
-      }
+      var newState = {...state}
+      newState.fetching = false
+      newState.clientsHistory.aggregatedByLatency= action.payload.data
+      return newState
     case 'GET_ALL_CLIENTS_HISTORY_FAIL':
       return {
         ...state, fetching: false

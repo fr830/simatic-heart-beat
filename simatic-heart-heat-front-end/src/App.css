@@ -105,11 +105,30 @@ li.ant-menu-item{
 }
 
 .green{
-  color: #27ae60
+  color: #27ae60;
+  opacity: 0.2;
 }
 
 .red{
-  color: #c0392b
+  color: #c0392b;
+  opacity: 0.2;
+}
+
+.gantt-object-up{
+  fill: #27ae60;
+  transition: 1s;
+  transition-timing-function: linear;
+}
+
+.gantt-object-down{
+  fill: #c0392b;
+  transition: 1s;
+  transition-timing-function: linear;
+}
+
+.gantt-label{
+  fill: white;
+  font-size: 8px;
 }
 
 /*Graphs*/

@@ -4,7 +4,7 @@ import Moment from 'moment'
 import _ from 'underscore'
 import * as d3 from "d3";
 
-class GraphPage extends React.Component {
+class LineChartPage extends React.Component {
 
   constructor(props) {
     super(props);
@@ -36,32 +36,18 @@ class GraphPage extends React.Component {
   }
 
   componentWillMount(){
-    this.props.getAllClientsHistory(true)
+    this.props.getAllClientsHistory(true, "2017-12-12T00:00:00")
   }
 
   componentWillReceiveProps(nextProps){
     var today = Moment().format('YYYY-MM-DDT[00:00:00]')
     var tmpClientsInHistory = []
 
-    var todayClientsHistory = nextProps.analytics.clientsHistory.filter((c) => c.LastUpdate > today)
+    var todayClientsHistory = nextProps.analytics.clientsHistory.aggregatedByLatency
 
-    //todayClientsHistory.sort((a,b) => a.LastUpdateTimestamp < b.LastUpdateTimestamp)
-
-    todayClientsHistory.forEach(function(c){
-      c.LastUpdateTimestamp = Moment(c.LastUpdate).unix()*1000
-      if(!this.isClientInArray(c, tmpClientsInHistory)){
-        tmpClientsInHistory.push({Name: c.Name, Ip: c.Ip, visible: true, history: []})
-      }
-    }.bind(this))
-
-    todayClientsHistory.sort((a,b) => a.LastUpdateTimestamp > b.LastUpdateTimestamp ? 1 : -1)
-
-    this.aggregateByClient(todayClientsHistory, tmpClientsInHistory)
-
-    var maximumX = Math.max.apply(Math, todayClientsHistory.map(function(o){return o.LastUpdateTimestamp;}))
-    var minimumX = Math.min.apply(Math, todayClientsHistory.map(function(o){return o.LastUpdateTimestamp;}))
-    var maximumY = Math.max.apply(Math, todayClientsHistory.map(function(o){return o.PingRoundTripTime;}))
-
+    var maximumX = Math.max.apply(Math, todayClientsHistory.map(function(o){return Math.max.apply(Math, o.DataPoints.map(function(e){return Moment(e.StartTime).unix()*1000;}))}))
+    var minimumX = Math.min.apply(Math, todayClientsHistory.map(function(o){return Math.min.apply(Math, o.DataPoints.map(function(e){return Moment(e.StartTime).unix()*1000;}))}))
+    var maximumY = Math.max.apply(Math, todayClientsHistory.map(function(o){return Math.min.apply(Math, o.DataPoints.map(function(e){return e.PingRoundTripTime}))}))
 
     var yScale = d3.scaleLinear()
       .domain([0, maximumY]) //numbers to be represented
@@ -79,27 +65,6 @@ class GraphPage extends React.Component {
       maximumY,
       yScale,
       xScale
-    })
-  }
-
-  isClientInArray(clientToFind, array){
-    var result = false
-    array.forEach(function(c){
-      if(c.Ip == clientToFind.Ip){
-        result = true
-      }
-    })
-    return result
-  }
-
-  aggregateByClient(todayClientsHistory, tmpClientsInHistory){
-    todayClientsHistory.forEach(function(c1){
-      tmpClientsInHistory.forEach(function(c2){
-        if(c2.Ip == c1.Ip){
-          c1.LastUpdateTimestamp = Moment(c1.LastUpdate).unix()*1000
-          c2.history.push(c1)
-        }
-      })
     })
   }
 
@@ -157,7 +122,7 @@ class GraphPage extends React.Component {
   }
 
   updateClientLocalPingRoundtripTime(clientsToUpdate){
-    var tmpAggregatedTodayClientsHistory = this.state.aggregatedTodayClientsHistory
+    var tmpAggregatedTodayClientsHistory = this.props.analytics.clientsHistory.aggregatedByLatency
     clientsToUpdate.forEach(function(clientToUpdate){
       tmpAggregatedTodayClientsHistory.forEach(function(c){
         if(c.Ip == clientToUpdate.clientIp){
@@ -174,7 +139,8 @@ class GraphPage extends React.Component {
   }
 
   renderClientPingRoundtripTime(){
-    return this.state.aggregatedTodayClientsHistory.map(function(c, i){
+    console.log(this.props.analytics);
+    return this.props.analytics.clientsHistory.aggregatedByLatency.map(function(c, i){
       if(c.visible){
         return <div key={i} className="relative col8 text1" onClick={() => this.editVisibility(c)}>
           <div className="background-div absolute" style={{width: (c.localPingRoundtripTime/this.state.maximumY*100) + "%"}}>{c.Name} {Math.floor(c.localPingRoundtripTime)}</div>
@@ -211,7 +177,7 @@ class GraphPage extends React.Component {
     {
       if(graph._groups[0][0].getAttribute("meta-data-event-set") == 0){
         console.log("event set");
-        graph.on("mousemove", () => this.mousemove())
+        //graph.on("mousemove", () => this.mousemove())
         graph.attr("meta-data-event-set", 1)
       }else{
         //console.log("event already set");
@@ -219,14 +185,14 @@ class GraphPage extends React.Component {
     }
 
     var valueline = d3.line()
-      .x(function(d) { return this.state.xScale(d.LastUpdateTimestamp); }.bind(this))
+      .x(function(d) { return this.state.xScale(Moment(d.StartTime).unix()*1000); }.bind(this))
       .y(function(d) { return this.state.yScale(d.PingRoundTripTime); }.bind(this))
       .curve(d3.curveCardinal);
 
-    var paths = this.state.aggregatedTodayClientsHistory.map(function(c, i){
-      if(c.visible){
-        return <path key={i} transform={"translate(" + this.state.leftPadding + "," + (-this.state.bottomPadding) + ")"} className="line" d={valueline(c.history)} meta-data-client-ip = {c.Ip}></path>
-      }
+    var paths = this.props.analytics.clientsHistory.aggregatedByLatency.map(function(c, i){
+      //if(c.visible){
+        return <path key={i} transform={"translate(" + this.state.leftPadding + "," + (-this.state.bottomPadding) + ")"} className="line" d={valueline(c.DataPoints)} meta-data-client-ip = {c.Ip}></path>
+      //}
     }.bind(this))
 
 
@@ -254,4 +220,4 @@ class GraphPage extends React.Component {
   }
 }
 
-export default GraphPage
+export default LineChartPage

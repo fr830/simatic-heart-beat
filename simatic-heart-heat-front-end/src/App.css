@@ -14,6 +14,10 @@ body{
   font-size: 12pt;
 }
 
+.full-width{
+  width: 100%
+}
+
 .ant-menu.ant-menu-horizontal.ant-menu-light.ant-menu-root{
   text-align: center;
   font-size: 14pt;
@@ -30,8 +34,32 @@ li.ant-menu-item{
   padding: 20px;
 }
 
+.section-2{
+  border: 1px solid #f7f7f7;
+  border-radius: 0 0 5px 5px;
+  padding: 20px;
+}
+
+.input-width-small{
+  width: 200px;
+}
+
+.inline-block{
+  display: inline-block;
+}
+
 .disabled{
   color: #95a5a6
+}
+
+.gantt-line-disabled{
+  opacity: 0.2;
+  transition: 0.2s
+}
+
+.gantt-line-enabled{
+  opacity: 1;
+  transition: 0.2s
 }
 
 .section-1-header{
@@ -69,11 +97,19 @@ li.ant-menu-item{
   padding: 2px 5px;
 }
 
+.padded-20{
+  padding: 20px
+}
+
 .col8{
   float: left;
   width: 16%;
   margin: .3%;
   //padding: .3%;
+  cursor: pointer;
+}
+
+.cursor-pointer{
   cursor: pointer;
 }
 
@@ -100,6 +136,16 @@ li.ant-menu-item{
 
 }
 
+.align-left{
+  text-align: left;
+}
+
+.client-status-information{
+  /*border: 1px dotted gray;*/
+  padding: 10px;
+  padding-top: 20px;
+}
+
 .button-spaging-horizontal{
   margin: 0 10px;
 }
@@ -116,14 +162,32 @@ li.ant-menu-item{
 
 .gantt-object-up{
   fill: #27ae60;
-  transition: 1s;
+  transition: 0.5s;
   transition-timing-function: linear;
 }
 
 .gantt-object-down{
   fill: #c0392b;
-  transition: 1s;
+  transition: 0.5s;
   transition-timing-function: linear;
+}
+
+
+.gantt-blurred rect{
+  /*
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+  */
+  fill: #D3D3D3;
+  transition: 2s
+}
+
+.gantt-spinner{
+  position: absolute;
+  left: 0
 }
 
 .gantt-label{

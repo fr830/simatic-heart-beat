@@ -1,5 +1,6 @@
 import configuration from '../configuration'
 import axios from 'axios'
+import store from '../index';
 //method: 'post',
 
 export const getAllClients = (fetchingFeedback = true) => ({
@@ -12,17 +13,47 @@ export const getAllClients = (fetchingFeedback = true) => ({
     }
 })
 
-export const getAllClientsHistory = (fetchingFeedback = true, startTime, endTime) => ({
-  type: 'GET_ALL_CLIENTS_HISTORY',
-  payload: {
-      request:{
-        url: configuration.apis.getAllClientsHistory,
-        method: 'post',
-        data: {startTime: startTime, endTime:endTime}
-      },
-      fetchingFeedback
+export const getAllClientsHistory = function(fetchingFeedback = true, startTime, endTime){
+  if(store != undefined && store.getState().analytics.requestPending){
+    console.log("request pending");
+    return {
+      type: 'GET_ALL_CLIENTS_HISTORY_ABORT',
+      payload: {}
     }
+  }
+
+  var et = undefined
+  if(endTime){
+    et = endTime.format('YYYY-MM-DDTHH:mm:ss')
+  }
+  var st = undefined
+  if(startTime){
+    st = startTime.format('YYYY-MM-DDTHH:mm:ss')
+  }
+
+  return{
+    type: 'GET_ALL_CLIENTS_HISTORY',
+    payload: {
+        request:{
+          url: configuration.apis.getAllClientsHistory,
+          method: 'post',
+          data: {startTime: st, endTime:et}
+        },
+        fetchingFeedback
+            }
+  }
+}
+
+export const login = () => ({
+  type: 'LOGIN',
+  payload: {}
 })
+
+export const logout = () => ({
+  type: 'LOGOUT',
+  payload: {}
+})
+
 
 export const getConfiguration = () => ({
   type: 'GET_CONFIGURATION',
@@ -103,6 +134,14 @@ export const deleteClient = (clientToDelete) => ({
 
 export const setPolling = (pollingValue, intervalManager) => ({
   type: 'SET_POLLING',
+  payload: {
+      pollingValue,
+      intervalManager
+    }
+})
+
+export const setAnalyticsPolling = (pollingValue, intervalManager) => ({
+  type: 'SET_ANALYTICS_POLLING',
   payload: {
       pollingValue,
       intervalManager

@@ -78,6 +78,8 @@ class ClientsPage extends React.Component {
       var simaticNodeElement = undefined
 
       if(c.NodeType == 0){
+        console.log(c.Name + " " + c.LastHeartBeat);
+        console.log(Moment().diff(Moment(c.LastHeartBeat), "seconds"));
         if(Moment().diff(Moment(c.LastHeartBeat), "seconds") > 5 ){
           simaticNodeElement = <Tag color="red" className="tag">Simatic Closed</Tag>
         }else{

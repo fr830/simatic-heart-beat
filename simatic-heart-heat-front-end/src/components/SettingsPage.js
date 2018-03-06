@@ -3,6 +3,7 @@ import {Table, Icon,Form, InputNumber, Input, Button, Anchor, Popconfirm, Radio}
 import Moment from 'moment'
 import _ from 'underscore'
 import configuration from '../configuration'
+import md5 from 'md5'
 const FormItem = Form.Item;
 const { Link } = Anchor;
 
@@ -27,6 +28,8 @@ class SettingsPage extends React.Component {
           Ip: ""
         },
         clientList: undefined,
+        inputClientValidated: true,
+        logged: false
       };
       this.updatePingInterval= this.updatePingInterval.bind(this);
       this.editItem= this.editItem.bind(this);
@@ -60,6 +63,7 @@ class SettingsPage extends React.Component {
 
   componentWillMount(){
     this.props.setPolling(false);
+    this.props.setAnalyticsPolling(false);
     this.props.getAllClients();
     this.props.getConfiguration();
   }
@@ -98,16 +102,18 @@ class SettingsPage extends React.Component {
   handleSitClientNameEdit = (event, c) => {
     var currentEditedItem = this.state.editedItem;
     currentEditedItem.Name = event.target.value
+
     this.setState({
-      editedItem: currentEditedItem
+      editedItem: currentEditedItem,
     });
+
   }
 
   handleSitClientIPEdit = (event, c) => {
     var currentEditedItem = this.state.editedItem;
     currentEditedItem.Ip = event.target.value
     this.setState({
-      editedItem: currentEditedItem
+      editedItem: currentEditedItem,
     });
   }
 
@@ -124,17 +130,33 @@ class SettingsPage extends React.Component {
 
   handleSitClientNameChange = (event) => {
     var currentNewItem = this.state.newItem;
+    var inputClientValidated = true;
     currentNewItem.Name = event.target.value
+    if(currentNewItem.Name.length > 0 && currentNewItem.Ip.length > 0){
+      inputClientValidated = false
+    }
     this.setState({
-      editedItem: currentNewItem
+      editedItem: currentNewItem,
+      inputClientValidated
     });
+  }
+
+  handlePasswordChange = (event) => {
+    if(md5(event.target.value) == "25422d0f3b2f8898e5d6698e0fa59521"){
+      this.props.login()
+    }
   }
 
   handleSitClientIPChange = (event) => {
     var currentNewItem = this.state.newItem;
+    var inputClientValidated = true;
     currentNewItem.Ip = event.target.value
+    if(currentNewItem.Name.length > 0 && currentNewItem.Ip.length > 0){
+      inputClientValidated = false
+    }
     this.setState({
-      newItem: currentNewItem
+      newItem: currentNewItem,
+      inputClientValidated
     });
   }
 
@@ -247,6 +269,26 @@ class SettingsPage extends React.Component {
 
     return (
       <div>
+      {!this.props.clients.logged &&
+        <div>
+          <div className="section-1-header" id="clients">
+            <span className="text-spacing">LOG IN</span>
+          </div>
+          <div className="section-1 align-center">
+            <Input
+              className="input-width-small inline-block "
+              type="password"
+              onChange={this.handlePasswordChange}
+              prefix={<Icon type="lock" style={{ fontSize: 13 }} />} placeholder="password"
+            />
+          </div>
+        </div>
+      }
+
+
+        {this.props.clients.logged && <div>
+          <br/>
+        <Button onClick={this.props.logout}>Logout</Button>
 
         <div className="section-1-header" id="clients">
           <span className="text-spacing">SERVER CONFIGURATION</span>
@@ -303,7 +345,7 @@ class SettingsPage extends React.Component {
              </Radio.Group>
             </FormItem>
             <FormItem>
-              <Button type="primary" htmlType="submit" className="button-spaging-horizontal" onClick={this.saveItem}>
+              <Button type="primary" htmlType="submit" className="button-spaging-horizontal" onClick={this.saveItem} disabled={this.state.inputClientValidated}>
                 Add new client
               </Button>
             </FormItem>
@@ -311,8 +353,7 @@ class SettingsPage extends React.Component {
 
           {this.renderClients()}
         </div>
-
-
+      </div>}
       </div>
     );
   }

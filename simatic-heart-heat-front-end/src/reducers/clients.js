@@ -87,6 +87,18 @@ const clients = (state = configuration.initialState.clients, action) => {
       return {
         ...state, polling: action.payload.pollingValue, intervalManager: action.payload.intervalManager
       }
+
+    case 'LOGIN':
+      return {
+        ...state, logged: true
+      }
+
+      case 'LOGOUT':
+        return {
+          ...state, logged: false
+        }
+
+
     default:
       return state
   }

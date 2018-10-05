@@ -18,7 +18,7 @@ class ClientsPage extends React.Component {
   }
 
   onChange = function(pagination, filters, sorter) {
-    console.log('params', pagination, filters, sorter);
+    //console.log('params', pagination, filters, sorter);
   }
 
   componentWillMount(){
@@ -78,9 +78,12 @@ class ClientsPage extends React.Component {
       var simaticNodeElement = undefined
 
       if(c.NodeType == 0){
-        console.log(c.Name + " " + c.LastHeartBeat);
-        console.log(Moment().diff(Moment(c.LastHeartBeat), "seconds"));
-        if(Moment().diff(Moment(c.LastHeartBeat), "seconds") > 5 ){
+        if (c.Name == 'testServer') {
+          console.log(c.Name + " " + c.LastHeartBeat);
+          console.log(Moment().diff(Moment(c.LastHeartBeat), "seconds"));
+        }
+        
+        if(Moment().diff(Moment(c.LastHeartBeat), "seconds") > 30 ){
           simaticNodeElement = <Tag color="red" className="tag">Simatic Closed</Tag>
         }else{
           simaticNodeElement = <Tag color="green" className="tag">Simatic Open</Tag>

@@ -19,10 +19,12 @@ namespace SimaticHeartBeatService.Business
   class SitClientManager
   {
     private string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ClientsDatabase"].ConnectionString;
+    private Boolean debugMode = Convert.ToBoolean(System.Configuration.ConfigurationManager.AppSettings["debug"]);
     private static Logger logger = LogManager.GetCurrentClassLogger();
     public bool StopSitClientWatchDog = false;
     private ServerConfigurationManager serverConfigurationManager = new ServerConfigurationManager();
     private RtdsManager rtdsManager = new RtdsManager();
+    private List<SitClient> clientsToUpdate = new List<SitClient>();
 
     public void UpdateResetPingPending()
     {
@@ -45,7 +47,18 @@ namespace SimaticHeartBeatService.Business
       }
       catch (Exception ex)
       {
-        logger.Trace("Exception in database call: " + ex.ToString());
+          if (debugMode)
+          {
+              logger.Trace("Exception in database call: " + ex.ToString());
+          }
+          else
+          {
+              logger.Trace("Exception in database call");
+          }
+      }
+      finally
+      {
+          sqlConnection.Close();
       }
     }
 
@@ -101,7 +114,8 @@ namespace SimaticHeartBeatService.Business
 	                    Ip nvarchar(max) NULL,
 	                    IsClientUp bit NULL,
 	                    PingRoundTripTime int NULL,
-	                    LastUpdate datetime NULL
+	                    LastUpdate datetime NULL,
+                        NodeType int
                     )";
             cmd.CommandText = sql;
 
@@ -113,7 +127,18 @@ namespace SimaticHeartBeatService.Business
         }
         catch (Exception ex)
         {
-            logger.Trace("Exception in database call: " + ex.ToString());
+            if (debugMode)
+            {
+                logger.Trace("Exception in database call: " + ex.ToString());
+            }
+            else
+            {
+                logger.Trace("Exception in database call");
+            }
+        }
+        finally
+        {
+            sqlConnection.Close();
         }
     }
 
@@ -162,98 +187,129 @@ namespace SimaticHeartBeatService.Business
       return sitClients;
     }
 
+    //public void UpdateSitClientPingPending(SitClient clientToUpdate)
+    //{
+    //  SqlConnection sqlConnection = new SqlConnection(connectionString);
+    //  DateTime timestamp = DateTime.Now;
 
+    //  SqlCommand cmd = new SqlCommand();
+    //  string sql = "";
+    //  cmd.CommandType = System.Data.CommandType.Text;
+    //  try
+    //  {
+    //    int IsPingPending = clientToUpdate.PingPending ? 1 : 0;
+    //    sql = "Update SitClients set PingPending = " + IsPingPending + ", LastUpdate = '" + timestamp.ToString() + "' where Ip = '" + clientToUpdate.Ip + "'";
+    //    cmd.CommandText = sql;
 
-    public void UpdateSitClientPingPending(SitClient clientToUpdate)
-    {
-      SqlConnection sqlConnection = new SqlConnection(connectionString);
-      DateTime timestamp = DateTime.Now;
+    //    cmd.Connection = sqlConnection;
 
-      SqlCommand cmd = new SqlCommand();
-      string sql = "";
-      cmd.CommandType = System.Data.CommandType.Text;
-      try
-      {
-        int IsPingPending = clientToUpdate.PingPending ? 1 : 0;
-        sql = "Update SitClients set PingPending = " + IsPingPending + ", LastUpdate = '" + timestamp.ToString() + "' where Ip = '" + clientToUpdate.Ip + "'";
-        cmd.CommandText = sql;
+    //    sqlConnection.Open();
+    //    cmd.ExecuteNonQuery();
+    //    sqlConnection.Close();
+    //  }
+    //  catch (Exception ex)
+    //  {
+    //      if (debugMode)
+    //      {
+    //          logger.Trace("Exception in database call: " + ex.ToString());
+    //      }
+    //      else
+    //      {
+    //          logger.Trace("Exception in database call");
+    //      }
+    //  }
+    //  finally
+    //  {
+    //      sqlConnection.Close();
+    //  }
+    //}
 
-        cmd.Connection = sqlConnection;
+    //public void UpdateSitClientIsUpFlag(SitClient clientToUpdate)
+    //{
+    //  SqlConnection sqlConnection = new SqlConnection(connectionString);
+    //  DateTime timestamp = DateTime.Now;
 
-        sqlConnection.Open();
-        cmd.ExecuteNonQuery();
-        sqlConnection.Close();
-      }
-      catch (Exception ex)
-      {
-        logger.Trace("Exception in database call: " + ex.ToString());
-      }
-    }
+    //  SqlCommand cmd = new SqlCommand();
+    //  string sql = "";
+    //  cmd.CommandType = System.Data.CommandType.Text;
+    //  try
+    //  {
+    //    int IsClientUpInt = clientToUpdate.IsClientUp ? 1 : 0;
+    //    sql = "Update SitClients set IsClientUp = " + IsClientUpInt + ", PingRoundTripTime = " + clientToUpdate.PingRoundTripTime + ", LastUpdate = '" + timestamp.ToString() + "', PingPending = 0 where Ip = '" + clientToUpdate.Ip + "'";
+    //    cmd.CommandText = sql;
 
-    public void UpdateSitClientIsUpFlag(SitClient clientToUpdate)
-    {
-      SqlConnection sqlConnection = new SqlConnection(connectionString);
-      DateTime timestamp = DateTime.Now;
+    //    cmd.Connection = sqlConnection;
 
-      SqlCommand cmd = new SqlCommand();
-      string sql = "";
-      cmd.CommandType = System.Data.CommandType.Text;
-      try
-      {
-        int IsClientUpInt = clientToUpdate.IsClientUp ? 1 : 0;
-        sql = "Update SitClients set IsClientUp = " + IsClientUpInt + ", PingRoundTripTime = " + clientToUpdate.PingRoundTripTime + ", LastUpdate = '" + timestamp.ToString() + "', PingPending = 0 where Ip = '" + clientToUpdate.Ip + "'";
-        cmd.CommandText = sql;
+    //    sqlConnection.Open();
+    //    cmd.ExecuteNonQuery();
+    //    sqlConnection.Close();
+    //  }
+    //  catch (Exception ex)
+    //  {
+    //      if (debugMode)
+    //      {
+    //          logger.Trace("Exception in database call: " + ex.ToString());
+    //      }
+    //      else
+    //      {
+    //          logger.Trace("Exception in database call");
+    //      }
+    //  }
+    //  finally
+    //  {
+    //      sqlConnection.Close();
+    //  }
+    //}
 
-        cmd.Connection = sqlConnection;
+    //public void InsertSitClientHistory(SitClient clientToInsert)
+    //{
+    //    SqlConnection sqlConnection = new SqlConnection(connectionString);
+    //    DateTime timestamp = DateTime.Now;
 
-        sqlConnection.Open();
-        cmd.ExecuteNonQuery();
-        sqlConnection.Close();
-      }
-      catch (Exception ex)
-      {
-        logger.Trace("Exception in database call: " + ex.ToString());
-      }
-    }
+    //    SqlCommand cmd = new SqlCommand();
+    //    string sql = "";
+    //    cmd.CommandType = System.Data.CommandType.Text;
+    //    try
+    //    {
+    //        int IsClientUpInt = clientToInsert.IsClientUp ? 1 : 0;
+    //        sql = "Insert into SitClientsHistory (Name, Ip, IsClientUp, PingRoundTripTime, LastUpdate) values ('" + clientToInsert.Name + "', '" + clientToInsert.Ip + "', " + IsClientUpInt + ", " + clientToInsert.PingRoundTripTime + ", '" + timestamp.ToString() + "')";
+    //        cmd.CommandText = sql;
 
-    public void InsertSitClientHistory(SitClient clientToInsert)
-    {
-        SqlConnection sqlConnection = new SqlConnection(connectionString);
-        DateTime timestamp = DateTime.Now;
+    //        cmd.Connection = sqlConnection;
 
-        SqlCommand cmd = new SqlCommand();
-        string sql = "";
-        cmd.CommandType = System.Data.CommandType.Text;
-        try
-        {
-            int IsClientUpInt = clientToInsert.IsClientUp ? 1 : 0;
-            sql = "Insert into SitClientsHistory (Name, Ip, IsClientUp, PingRoundTripTime, LastUpdate) values ('" + clientToInsert.Name + "', '" + clientToInsert.Ip + "', " + IsClientUpInt + ", " + clientToInsert.PingRoundTripTime + ", '" + timestamp.ToString() + "')";
-            cmd.CommandText = sql;
-
-            cmd.Connection = sqlConnection;
-
-            sqlConnection.Open();
-            cmd.ExecuteNonQuery();
-            sqlConnection.Close();
-            deleteOldSitClientHistory();
-        }
-        catch (Exception ex)
-        {
-            logger.Trace("Exception in database call: " + ex.ToString());
-        }
-    }
+    //        sqlConnection.Open();
+    //        cmd.ExecuteNonQuery();
+    //        sqlConnection.Close();
+    //        //deleteOldSitClientHistory();
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        if (debugMode)
+    //        {
+    //            logger.Trace("Exception in database call: " + ex.ToString());
+    //        }
+    //        else
+    //        {
+    //            logger.Trace("Exception in database call");
+    //        }
+    //    }
+    //    finally
+    //    {
+    //        sqlConnection.Close();
+    //    }
+    //}
 
     public void deleteOldSitClientHistory()
     {
         SqlConnection sqlConnection = new SqlConnection(connectionString);
         DateTime lastWeek = DateTime.Now.AddDays(-7);
-
         SqlCommand cmd = new SqlCommand();
         string sql = "";
         cmd.CommandType = System.Data.CommandType.Text;
         try
         {
             sql = "delete from SitClientsHistory where LastUpdate < '" + lastWeek.ToString() + "'";
+            //sql = "DROP TABLE SitClientsHistory";
             cmd.CommandText = sql;
 
             cmd.Connection = sqlConnection;
@@ -264,7 +320,19 @@ namespace SimaticHeartBeatService.Business
         }
         catch (Exception ex)
         {
-            logger.Trace("Exception in database call: " + ex.ToString());
+            if (debugMode)
+            {
+
+                logger.Trace("Exception in database call: " + ex.ToString());
+            }
+            else
+            {
+                logger.Trace("Exception in database call");
+            }
+        }
+        finally
+        {
+            sqlConnection.Close();
         }
     }
 
@@ -272,12 +340,19 @@ namespace SimaticHeartBeatService.Business
     {
       logger.Trace("Checking Sit Clients");
 
+      Thread writingThread = new Thread(new ThreadStart(() => WriteResult()));
+      writingThread.Start();
+
       while (!StopSitClientWatchDog)
       {
         List<SitClient> sitClients = RetrieveSitClients();
+        logger.Trace("Pinging " + sitClients.Count + "...");
         foreach (SitClient c in sitClients)
         {
-          logger.Trace("Checking " + c.Name + " ip: " + c.Ip);
+            if (debugMode)
+            {
+                logger.Trace("Checking " + c.Name + " ip: " + c.Ip);
+            }
           //if (!c.PingPending)
           //{
             Thread myThread = new Thread(new ThreadStart(() => PingSitClient(c)));
@@ -298,6 +373,115 @@ namespace SimaticHeartBeatService.Business
       }
     }
 
+    public void WriteResult()
+    {
+        List<SitClient> clientsToUpdateTmp = new List<SitClient>();
+        logger.Trace("Starting writing thread");
+        while (!StopSitClientWatchDog)
+        {
+            deleteOldSitClientHistory();
+            var interval = serverConfigurationManager.RetrieveSitConfiguration().SitClientPingInterval;
+            Thread.Sleep(interval / 2);
+
+            logger.Trace("Writing " + clientsToUpdate.Count + " results");
+            clientsToUpdateTmp = new List<SitClient>();
+            clientsToUpdate.ForEach((item) =>
+            {
+                clientsToUpdateTmp.Add(item);
+            });
+            clientsToUpdate.Clear();
+            if (clientsToUpdateTmp.Count > 0)
+            {
+                InsertMultipleSitClientHistory(clientsToUpdateTmp);
+                UpdateMultipleSitClientIsUpFlag(clientsToUpdateTmp);
+            }
+        }
+    }
+
+    public void InsertMultipleSitClientHistory(List<SitClient> clientsToInsert)
+    {
+        SqlConnection sqlConnection = new SqlConnection(connectionString);
+        DateTime timestamp = DateTime.Now;
+        logger.Trace("Inserting " + clientsToInsert.Count + " in history");
+        SqlCommand cmd = new SqlCommand();
+        string sql = "";
+        cmd.CommandType = System.Data.CommandType.Text;
+        try
+        {
+            clientsToInsert.ForEach((item) =>
+            {
+                int IsClientUpInt = item.IsClientUp ? 1 : 0;
+                sql += "Insert into SitClientsHistory (Name, Ip, IsClientUp, PingRoundTripTime, LastUpdate) values ('" + item.Name + "', '" + item.Ip + "', " + IsClientUpInt + ", " + item.PingRoundTripTime + ", '" + timestamp.ToString() + "'); ";
+            });
+
+            cmd.CommandText = sql;
+
+            cmd.Connection = sqlConnection;
+
+            sqlConnection.Open();
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+            //deleteOldSitClientHistory();
+        }
+        catch (Exception ex)
+        {
+            if (debugMode)
+            {
+                logger.Trace("Exception in database call: " + ex.ToString());
+            }
+            else
+            {
+                logger.Trace("Exception in database call");
+            }
+        }
+        finally
+        {
+            sqlConnection.Close();
+        }
+    }
+
+    public void UpdateMultipleSitClientIsUpFlag(List<SitClient> clientsToUpdate)
+    {
+        SqlConnection sqlConnection = new SqlConnection(connectionString);
+        DateTime timestamp = DateTime.Now;
+        logger.Trace("Updating " + clientsToUpdate.Count + " in real time status table");
+        SqlCommand cmd = new SqlCommand();
+        string sql = "";
+        cmd.CommandType = System.Data.CommandType.Text;
+        try
+        {
+            clientsToUpdate.ForEach((item) =>
+            {
+                int IsClientUpInt = item.IsClientUp ? 1 : 0;
+                sql += "Update SitClients set IsClientUp = " + IsClientUpInt + ", PingRoundTripTime = " + item.PingRoundTripTime + ", LastUpdate = '" + timestamp.ToString() + "', PingPending = 0 where Ip = '" + item.Ip + "'; ";
+            });
+            
+            
+            cmd.CommandText = sql;
+
+            cmd.Connection = sqlConnection;
+
+            sqlConnection.Open();
+            cmd.ExecuteNonQuery();
+            sqlConnection.Close();
+        }
+        catch (Exception ex)
+        {
+            if (debugMode)
+            {
+                logger.Trace("Exception in database call: " + ex.ToString());
+            }
+            else
+            {
+                logger.Trace("Exception in database call");
+            }
+        }
+        finally
+        {
+            sqlConnection.Close();
+        }
+    }
+
     public void PingSitClient(SitClient c)
     {
       //c.PingPending = true;
@@ -313,21 +497,28 @@ namespace SimaticHeartBeatService.Business
 
         if (reply.Status == IPStatus.Success)
         {
-          logger.Trace("Success  " + c.Name + " ip: " + c.Ip + " RoundtripTime: " + reply.RoundtripTime);
+            if (debugMode)
+            {
+                logger.Trace("Success  " + c.Name + " ip: " + c.Ip + " RoundtripTime: " + reply.RoundtripTime);
+            }
           c.IsClientUp = true;
           c.PingRoundTripTime = Convert.ToInt32(reply.RoundtripTime);
           rtdsManager.updateRtdsTag(c.Name, true);
         }
         else
         {
-          logger.Trace("Failed   " + c.Name + " ip: " + c.Ip);
+            if (debugMode)
+            {
+                logger.Trace("Failed   " + c.Name + " ip: " + c.Ip);
+            }
           c.IsClientUp = false;
           c.PingRoundTripTime = 0;
           rtdsManager.updateRtdsTag(c.Name, false);
         }
 
-        UpdateSitClientIsUpFlag(c);
-        InsertSitClientHistory(c);
+        clientsToUpdate.Add(c);
+        //UpdateSitClientIsUpFlag(c);
+        //InsertSitClientHistory(c);
       }
       catch (Exception ex)
       {
@@ -336,14 +527,11 @@ namespace SimaticHeartBeatService.Business
         c.IsClientUp = false;
         rtdsManager.updateRtdsTag(c.Name, false);
         //UpdateSitClientPingPending(c);
-        UpdateSitClientIsUpFlag(c);
-        InsertSitClientHistory(c);
+        //UpdateSitClientIsUpFlag(c);
+        //InsertSitClientHistory(c);
+        clientsToUpdate.Add(c);
       }
     }
-
-
-
-
   }
 
 

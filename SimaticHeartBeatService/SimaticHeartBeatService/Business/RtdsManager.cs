@@ -20,13 +20,12 @@ namespace SimaticHeartBeatService.Business
 
             if (RTDS.Write(tagFullName, value))
             {
-                logger.Trace("Updating: " + tagFullName + " value: " + value);
+                //logger.Trace("Updating: " + tagFullName + " value: " + value);
             }
             else
             {
-                logger.Trace("Error in RTDS tag manipulation: " + tagFullName);
+                //logger.Trace("Error in RTDS tag manipulation: " + tagFullName);
             }
-
         }
     }
 }
